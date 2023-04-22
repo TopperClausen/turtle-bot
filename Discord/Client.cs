@@ -21,10 +21,20 @@ namespace Discord {
             
             await Task.Delay(-1);
         }
-        
+
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
-            SlashCommands.Find(command => command.CommandName == command.CommandName).Execute(command);
+            Console.WriteLine("command " + command.CommandName + " issued by " + command.User.Username);
+            
+            if (Environment.GetEnvironmentVariable("ENVIROMENT") == "DEVELOPMENT" && command.Channel.Id == 496370645962063898)
+            {
+                SlashCommands.Find(slashCommand => slashCommand.CommandName == slashCommand.CommandName).Execute(command);
+            }
+            else if (Environment.GetEnvironmentVariable("ENVIROMENT") == "PRODUCTION" && command.Channel.Id != 496370645962063898)
+            {
+                SlashCommands.Find(slashCommand => slashCommand.CommandName == slashCommand.CommandName).Execute(command);
+            }
+
         }
         
         private async Task ClientReady()
