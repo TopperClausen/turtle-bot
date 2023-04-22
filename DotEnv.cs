@@ -12,6 +12,10 @@ namespace TurtleBot
                 string[] parts = line.Split("=", StringSplitOptions.RemoveEmptyEntries);
                 Environment.SetEnvironmentVariable(parts[0], parts[1]);
             }
+            if (Environment.GetEnvironmentVariable("ENVIROMENT") == null)
+            {
+                Environment.SetEnvironmentVariable("ENVIROMENT", "DEVELOPMENT");
+            }
         }
     }
 }
