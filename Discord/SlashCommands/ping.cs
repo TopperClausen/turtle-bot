@@ -3,14 +3,15 @@ using Discord.WebSocket;
 namespace Discord.SlashCommands
 {
     public class Ping : ISlashCommand {
-        public DiscordSocketClient client { get; set; }
-        
+        public Client client { get; set; }
         public string CommandName { get { return "ping"; } set {} }
-        
-        public Ping(DiscordSocketClient client)
+
+
+        public Ping(Client client)
         {
             this.client = client;
-            SlashCommandRegister.Register(client, CommandName, "Skriver pong tilbage");
+            var commandBuilder = SlashCommandRegister.CommandBuilder("ping", "Skriver pong tilbage");
+            SlashCommandRegister.BuildCommand(commandBuilder, this.client.DiscordClient);
         }
         
         public async Task Execute(SocketSlashCommand command)

@@ -1,13 +1,12 @@
 using Discord.Net;
 using Discord.SlashCommands;
 using Discord.WebSocket;
-using Newtonsoft.Json;
+using Discord.Services;
 
 namespace Discord {
     public class Client {
-        private DiscordSocketClient DiscordClient { get; set; }
+        public DiscordSocketClient DiscordClient { get; set; }
         private List<ISlashCommand> SlashCommands = new List<ISlashCommand>();
-        
         public async Task Run()
         {
             DiscordClient = new DiscordSocketClient();
@@ -28,11 +27,11 @@ namespace Discord {
             
             if (Environment.GetEnvironmentVariable("ENVIROMENT") == "DEVELOPMENT" && command.Channel.Id == 496370645962063898)
             {
-                SlashCommands.Find(slashCommand => slashCommand.CommandName == slashCommand.CommandName).Execute(command);
+                SlashCommands.Find(slashCommand => slashCommand.CommandName == command.CommandName).Execute(command);
             }
             else if (Environment.GetEnvironmentVariable("ENVIROMENT") == "PRODUCTION" && command.Channel.Id != 496370645962063898)
             {
-                SlashCommands.Find(slashCommand => slashCommand.CommandName == slashCommand.CommandName).Execute(command);
+                SlashCommands.Find(slashCommand => slashCommand.CommandName == command.CommandName).Execute(command);
             }
 
         }
@@ -40,12 +39,15 @@ namespace Discord {
         private async Task ClientReady()
         {
             RegisterCommands();
+            
+            DiscordSocketClient client = new DiscordSocketClient();
         }
         
         private void RegisterCommands()
         {
             Console.WriteLine("registering commands");
-            SlashCommands.Add(new Ping(DiscordClient));
+            SlashCommands.Add(new Ping(this));
+            SlashCommands.Add(new Gpt(this));
         }
         
         private Task Log(LogMessage msg)
