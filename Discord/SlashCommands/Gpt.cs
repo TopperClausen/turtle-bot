@@ -19,7 +19,8 @@ public class Gpt : ISlashCommand
     public async Task Execute(SocketSlashCommand command)
     {
         var param = command.Data.Options.First(param => param.Name == "question");
-        command.RespondAsync("Kontakter ChatGPT...");
+        string question = command.Data.Options.First(param => param.Name == "question").ToString();
+        command.RespondAsync(question);
         
         string response = await _gptService.Ask(param.Value.ToString());
         await command.FollowupAsync(response);
