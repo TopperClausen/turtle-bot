@@ -48,6 +48,7 @@ namespace Discord {
             Console.WriteLine("registering commands");
             SlashCommands.Add(new Ping(this));
             SlashCommands.Add(new Gpt(this));
+            SlashCommands.Add(new Dalle(this));
         }
         
         private Task Log(LogMessage msg)

@@ -1,15 +1,15 @@
-﻿using System.Net;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text;
+using Discord.Models;
 using Newtonsoft.Json;
 
 namespace Discord.Services;
-using Discord.Models.GPT;
-using System.Net.Http;
-public class GptService
+
+public class DalleService
 {
-    private String endpoint = "https://api.openai.com/v1/chat/completions";
+    private String endpoint = "https://api.openai.com/v1/images/generations";
     private String _token = Environment.GetEnvironmentVariable("OPENAI_TOKEN");
+    
     public async Task<String> Ask(String question)
     {
         var client = new HttpClient();
@@ -25,8 +25,8 @@ public class GptService
             if (response.IsSuccessStatusCode)
             {
                 dynamic jsonObject = JsonConvert.DeserializeObject(body);
-                string messageContent = jsonObject.choices[0].message.content;
-                return messageContent;
+                string url = jsonObject.data[0].url;
+                return url;
             }
             return $"Request failed: {body}";
         }
@@ -36,10 +36,9 @@ public class GptService
         }
     }
 
-    private string jsonBody(String question)
+    private string jsonBody(string question)
     {
-        var body = new Completion();
-        body.messages.Add(new Message(question));
+        var body = new DalleBody(question);
         return JsonConvert.SerializeObject(body);
     }
 }
