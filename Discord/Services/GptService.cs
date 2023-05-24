@@ -6,34 +6,31 @@ using Newtonsoft.Json;
 namespace Discord.Services;
 using Discord.Models.GPT;
 using System.Net.Http;
-public class GptService
+public class GptService : OpenAIApiService
 {
     private String endpoint = "https://api.openai.com/v1/chat/completions";
     private String _token = Environment.GetEnvironmentVariable("OPENAI_TOKEN");
     public async Task<String> Ask(String question)
     {
-        var client = new HttpClient();
-        client.DefaultRequestHeaders.Accept.Clear();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-        var content = new StringContent(jsonBody(question), Encoding.UTF8, "application/json");
-
         try
         {
-            HttpResponseMessage response = await client.PostAsync(endpoint, content);
+            HttpResponseMessage response = await PostAsync(endpoint, jsonBody(question));
 
             var body =  await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                dynamic jsonObject = JsonConvert.DeserializeObject(body);
-                string messageContent = jsonObject.choices[0].message.content;
-                return messageContent;
-            }
-            return $"Request failed: {body}";
+            
+            return !response.IsSuccessStatusCode ? $"Request failed: {body}" : AnswerFromBody(body);
         }
         catch (Exception e)
         {
             return e.Message;
         }
+    }
+
+    private string AnswerFromBody(dynamic body)
+    {
+        dynamic jsonObject = JsonConvert.DeserializeObject(body);
+        string messageContent = jsonObject.choices[0].message.content;
+        return messageContent;
     }
 
     private string jsonBody(String question)
